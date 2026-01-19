@@ -129,7 +129,7 @@ export const products = [
         category: "Kids",
         subCategory: "Topwear",
         sizes: ["S", "L", "XL"],
-        date: 1716234545448,
+        date: 1716234545448,    
         bestseller: true
     },
     {
@@ -190,7 +190,7 @@ export const products = [
         subCategory: "Topwear",
         sizes: ["S", "M", "L", "XL"],
         date: 1716622345448,
-        bestseller: false
+        bestseller: true
     },
     {
         _id: "aaaai",
@@ -238,7 +238,7 @@ export const products = [
         subCategory: "Topwear",
         sizes: ["S", "M", "L", "XL"],
         date: 1716624445448,
-        bestseller: false
+        bestseller: true
     },
     {
         _id: "aaaam",
