@@ -7,6 +7,9 @@ import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js'
 import cartRouter from './routes/cartRoute.js'
 import orderRouter from './routes/orderRoute.js'
+import paymentRoutes from "./routes/paymentRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
+import listModelsRoute from "./routes/listModels.js";
 
 // APP Config 
 const app = express()
@@ -25,6 +28,9 @@ app.use('/api/user',userRouter)
 app.use('/api/product',productRouter)
 app.use('/api/cart',cartRouter)
 app.use('/api/order',orderRouter)
+app.use("/api/payment", paymentRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/models", listModelsRoute);
 
 app.get('/',(req,res)=>{
   res.send("API working")

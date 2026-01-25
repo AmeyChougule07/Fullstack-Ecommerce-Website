@@ -53,12 +53,12 @@ const PlaceOrder = () => {
 
       switch (method) {
 
-        // API calls for COD
+        // API calls for online_payment
         case 'cod':
           const response = await axios.post(backendUrl + '/api/order/place',orderData,{headers:{token}})
           if (response.data.success) {
             setCartItems({})
-            navigate('/orders')
+            navigate(`/payment/${response.data.orderId}`)
           } else{
             toast.error(response.data.message)
           }
@@ -118,7 +118,7 @@ const PlaceOrder = () => {
             </div>
             <div onClick={()=>setMethod('cod')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
               <p className={`min-w-3.5 h-3.5 border rounded-full ${method ==='cod'? 'bg-green-400' : ''}`}></p>
-              <p className='text-gray-500 text-sm font-medium mx-4 '>CASH ON DELIVERY</p>
+              <p className='text-gray-500 text-sm font-medium mx-4 '>ONLINE PAYMENT</p>
             </div>
           </div>
           <div className='w-full text-end mt-8'>
