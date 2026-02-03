@@ -1,92 +1,87 @@
-import { response } from "express"
-import orderModel from "../models/orderModel.js"
-import userModel from "../models/userModel.js"
+import orderModel from "../models/orderModel.js";
+import userModel from "../models/userModel.js";
 
-{/* Global variables */}
-const currency = 'inr'
-const deliveryCharge = 50
+/* Global variables */
+const currency = "inr";
+const deliveryCharge = 50;
 
-{/*Placing order using cash on delivery method*/}
-
-const placeOrder = async (req,res) => {
+/* ✅ Place Order (Dummy Online Payment Supported) */
+const placeOrder = async (req, res) => {
   try {
-    const { userId, items, amount, address } = req.body
+    // ✅ Receive paymentMethod from frontend
+    const { userId, items, amount, address, paymentMethod } = req.body;
+
+    // ✅ Create order object
     const orderData = {
       userId,
       items,
       address,
       amount,
-      paymentMethod:"ONLINE",
-      payment:false,
-      date: Date.now()
-    }
 
-    const newOrder = new orderModel(orderData)
-    await newOrder.save()
+      // ✅ Store payment method dynamically
+      paymentMethod: paymentMethod || "online",
 
-    await userModel.findByIdAndUpdate(userId,{cartData:{}})
+      // ✅ Dummy online payment assumed successful
+      payment: paymentMethod === "online" ? true : false,
+
+      date: Date.now(),
+    };
+
+    // ✅ Save order in DB
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+
+    // ✅ Clear user cart after placing order
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+    // ✅ Send response to frontend
     res.json({
       success: true,
-      message: "Order placed",
-      orderId: newOrder._id   // ✅ ADD THIS LINE
+      message: "Order placed successfully",
+      orderId: newOrder._id,
     });
 
-
   } catch (error) {
     console.log(error);
-    res.json({success:false, message:error.message})
+    res.json({ success: false, message: error.message });
   }
-}
+};
 
-{/*Placing order using STRIPE method*/}
-
-const placeOrderStripe = async (req,res) => {
-
-}
-
-{/*Placing order using RAZORPAY method*/}
-
-const placeOrderRazorpay = async (req,res) => {
-
-}
-
-{/*All orders data for admin panel*/}
-
-const allOrders = async (req,res) => {
+/* ✅ All orders data for admin panel */
+const allOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({})
-    res.json({success:true,orders})
+    const orders = await orderModel.find({});
+    res.json({ success: true, orders });
   } catch (error) {
     console.log(error);
-    res.json({success:false, message:error.message})
+    res.json({ success: false, message: error.message });
   }
-}
+};
 
-{/*User orders data for frontend*/}
-
-const userOrders = async (req,res) => {
+/* ✅ User orders data for frontend */
+const userOrders = async (req, res) => {
   try {
-    const { userId } = req.body
-    const orders = await orderModel.find({ userId })
-    res.json({success:true, orders})
+    const { userId } = req.body;
+    const orders = await orderModel.find({ userId });
+    res.json({ success: true, orders });
   } catch (error) {
     console.log(error);
-    res.json({success:false, message:error.message})
+    res.json({ success: false, message: error.message });
   }
-}
+};
 
-{/*Update order status from only admin panel*/}
-
-const updateStatus = async (req,res) => {
+/* ✅ Update order status (Admin only) */
+const updateStatus = async (req, res) => {
   try {
-    const { orderId, status } = req.body
-    await orderModel.findByIdAndUpdate(orderId, {status})
-    res.json({success:true, message:"Status updated"})
+    const { orderId, status } = req.body;
 
+    await orderModel.findByIdAndUpdate(orderId, { status });
+
+    res.json({ success: true, message: "Status updated successfully" });
   } catch (error) {
     console.log(error);
-    res.json({success:false, message:error.message})
+    res.json({ success: false, message: error.message });
   }
-}
+};
 
-export { placeOrder,placeOrderStripe,placeOrderRazorpay,allOrders,userOrders,updateStatus }
+export { placeOrder, allOrders, userOrders, updateStatus };
