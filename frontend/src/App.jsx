@@ -17,6 +17,7 @@ import OrderFailed from "./pages/OrderFailed";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chatbot from './pages/Chatbot'
+import Verify from './pages/Verify'
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
         <Route path='/about' element={<About/>}/>
         <Route path="/payment/:orderId" element={<DummyPayment />} />
         <Route path="/order-failed" element={<OrderFailed />} />
+        <Route path="/verify" element={<Verify />} />
 
       </Routes>
       <Footer/>

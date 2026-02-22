@@ -4,6 +4,8 @@ import {
   allOrders,
   userOrders,
   updateStatus,
+  placeOrderStripe,
+  verifyStripe
 } from "../controllers/orderController.js";
 
 import adminAuth from "../middleware/adminAuth.js";
@@ -15,10 +17,16 @@ const orderRouter = express.Router();
 orderRouter.post("/list", adminAuth, allOrders);
 orderRouter.post("/status", adminAuth, updateStatus);
 
-/* ✅ Dummy Online Payment Order Placement */
+/* ✅ Online Payment */
 orderRouter.post("/place", authUser, placeOrder);
+
+/* ✅ STRIPE payment gateway */
+orderRouter.post("/stripe", authUser, placeOrderStripe);
 
 /* ✅ User features */
 orderRouter.post("/userorders", authUser, userOrders);
+
+//Verify payment
+orderRouter.post('/verifyStripe',authUser,verifyStripe)
 
 export default orderRouter;
