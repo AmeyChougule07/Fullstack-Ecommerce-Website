@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendOtpEmail } from "../utils/sendOtpEmail.js";
 
 const createToken = (id)=>{
   return jwt.sign({id},process.env.JWT_SECRET)
@@ -91,4 +92,71 @@ const adminLogin = async(req,res)=>{
   }
 }
 
-export { loginUser,registerUser,adminLogin }
+// Send OTP function
+
+const sendResetOtp = async (req,res) => {
+  try {
+
+    const { email } = req.body;
+
+    const user = await userModel.findOne({ email });
+
+    if (!user)
+      return res.json({ success:false, message:"User not found" });
+
+    const otp = Math.floor(100000 + Math.random()*900000).toString();
+
+    user.resetOtp = otp;
+    user.resetOtpExpireAt = Date.now() + 10*60*1000;
+
+    await user.save();
+
+    await sendOtpEmail(email, otp);
+
+    res.json({ success:true, message:"OTP sent to email" });
+
+  } catch(error){
+    res.json({ success:false, message:error.message });
+  }
+};
+
+//Reset OTP function
+
+const resetPassword = async (req,res)=>{
+  try {
+
+    const { email, otp, newPassword } = req.body;
+
+    const user = await userModel.findOne({ email });
+
+    if (!user)
+      return res.json({ success:false, message:"User not found" });
+
+    const enteredOtp = otp.toString(); 
+
+    if (
+      user.resetOtp !== enteredOtp ||
+      user.resetOtpExpireAt < Date.now()
+    ){
+      return res.json({
+        success:false,
+        message:"Invalid or expired OTP"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword,10);
+
+    user.password = hashedPassword;
+    user.resetOtp = "";
+    user.resetOtpExpireAt = 0;
+
+    await user.save();
+
+    res.json({ success:true, message:"Password updated successfully" });
+
+  } catch(error){
+    res.json({ success:false, message:error.message });
+  }
+};
+
+export { loginUser,registerUser,adminLogin,sendResetOtp,resetPassword }

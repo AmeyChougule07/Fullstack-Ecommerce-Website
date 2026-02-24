@@ -42,6 +42,13 @@ const PlaceOrder = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
+    // ✅ LOGIN CHECK ADDED
+    if (!token) {
+      toast.error("Please login first to continue checkout");
+      navigate("/login");
+      return;
+    }
+
     try {
       let orderItems = [];
 
@@ -90,15 +97,21 @@ const PlaceOrder = () => {
         }
 
         // ---------- STRIPE PAYMENT ----------
-        case "stripe": 
-          const responseStripe = await axios.post(backendUrl + '/api/order/stripe',orderData,{headers:{token}})
-          if(responseStripe.data.success){
-            const {session_url} = responseStripe.data
-            window.location.replace(session_url)
-          } else{
-            toast.error(responseStripe.data.message)
+        case "stripe": {
+          const responseStripe = await axios.post(
+            backendUrl + "/api/order/stripe",
+            orderData,
+            { headers: { token } }
+          );
+
+          if (responseStripe.data.success) {
+            const { session_url } = responseStripe.data;
+            window.location.replace(session_url);
+          } else {
+            toast.error(responseStripe.data.message);
           }
           break;
+        }
 
         default:
           toast.error("Please select payment method");
